@@ -57,7 +57,7 @@ var/docker.up: var/docker.build vendor
 	@$(DOCKER_COMPOSE) up -d
 	@$(call touch,var/docker.up)
 	$(MAKE) db
-	@$(call log,View to the API documentation: http://127.0.0.1:8000/)
+	@$(call log,API available at: http://127.0.0.1:8000/)
 	@$(call log_success,Done)
 
 .PHONY: stop
