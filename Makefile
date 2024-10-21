@@ -49,7 +49,7 @@ pull: ## Pulling docker images
 .PHONY: shell
 shell: start ## Enter in the PHP container
 	@$(call log,Entering inside php container ...)
-	@$(DOCKER_COMPOSE) exec php ash
+	@$(DOCKER_COMPOSE) exec php bash
 
 start: var/docker.up ## Start the docker stack
 var/docker.up: var/docker.build vendor
