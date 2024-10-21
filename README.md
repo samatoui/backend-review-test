@@ -50,7 +50,7 @@ The following command will start the development environment:
 make start
 ```
 
-You can access to the application at [](http://127.0.0.1:8000/).
+You can access to the application at [127.0.0.1:8000](http://127.0.0.1:8000/).
 
 ### Access to a shell in the PHP container
 
