@@ -24,7 +24,7 @@ CURRENT_USER := $(shell id -u)
 CURRENT_GROUP := $(shell id -g)
 
 TTY   := $(shell tty -s || echo '-T')
-DOCKER_COMPOSE := FIXUID=$(CURRENT_USER) FIXGID=$(CURRENT_GROUP) docker-compose
+DOCKER_COMPOSE := FIXUID=$(CURRENT_USER) FIXGID=$(CURRENT_GROUP) docker compose
 PHP_RUN := $(DOCKER_COMPOSE) run $(TTY) --no-deps --rm php
 PHP_EXEC := $(DOCKER_COMPOSE) exec $(TTY) php
 
@@ -49,7 +49,7 @@ pull: ## Pulling docker images
 .PHONY: shell
 shell: start ## Enter in the PHP container
 	@$(call log,Entering inside php container ...)
-	@$(DOCKER_COMPOSE) exec php ash
+	@$(DOCKER_COMPOSE) exec php bash
 
 start: var/docker.up ## Start the docker stack
 var/docker.up: var/docker.build vendor
@@ -57,7 +57,7 @@ var/docker.up: var/docker.build vendor
 	@$(DOCKER_COMPOSE) up -d
 	@$(call touch,var/docker.up)
 	$(MAKE) db
-	@$(call log,View to the API documentation: http://127.0.0.1:8000/)
+	@$(call log,API available at: http://127.0.0.1:8000/)
 	@$(call log_success,Done)
 
 .PHONY: stop

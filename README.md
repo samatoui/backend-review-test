@@ -40,7 +40,7 @@ Your PR will be reviewed during our technical interview, and it will be a suppor
 
 ## :computer: How to use development environment
 
-You need `make`, `docker` and `docker-compose` installed to start the development environment.
+You need `make` and `docker` installed to start the development environment.
 
 ### Start the development environment
 
@@ -50,7 +50,7 @@ The following command will start the development environment:
 make start
 ```
 
-You can access to the application at [](http://127.0.0.1:8000/).
+You can access to the application at [127.0.0.1:8000](http://127.0.0.1:8000/).
 
 ### Access to a shell in the PHP container
 
