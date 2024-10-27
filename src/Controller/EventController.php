@@ -5,36 +5,61 @@ namespace App\Controller;
 use App\Dto\EventInput;
 use App\Repository\ReadEventRepository;
 use App\Repository\WriteEventRepository;
+use App\Serializer\JsonSerializer;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class EventController
 {
+    /**
+     * @var WriteEventRepository
+     */
     private WriteEventRepository $writeEventRepository;
-    private ReadEventRepository $readEventRepository;
-    private SerializerInterface $serializer;
 
+    /**
+     * @var ReadEventRepository
+     */
+    private ReadEventRepository $readEventRepository;
+
+    /**
+     * @var JsonSerializer
+     */
+    private JsonSerializer $serializer;
+
+    /**
+     * @param WriteEventRepository $writeEventRepository
+     * @param ReadEventRepository  $readEventRepository
+     * @param JsonSerializer       $serializer
+     */
     public function __construct(
         WriteEventRepository $writeEventRepository,
         ReadEventRepository $readEventRepository,
-        SerializerInterface $serializer
+        JsonSerializer $serializer
     ) {
         $this->writeEventRepository = $writeEventRepository;
         $this->readEventRepository = $readEventRepository;
-        $this->serializer = $serializer;
+        $this->serializer          = $serializer;
     }
 
     /**
-     * @Route(path="/api/event/{id}/update", name="api_commit_update", methods={"PUT"})
+     * @param Request            $request
+     * @param int                $id
+     * @param ValidatorInterface $validator
+     *
+     * @return Response
+     *
+     * @throws \Symfony\Component\Serializer\Exception\ExceptionInterface
      */
+    #[Route('/api/event/{id}/update', name: "api_commit_update", methods: ['PUT'])]
     public function update(Request $request, int $id, ValidatorInterface $validator): Response
     {
-        $eventInput = $this->serializer->deserialize($request->getContent(), EventInput::class, 'json');
-
+        $eventInput = $this->serializer->denormalize(
+            \json_decode($request->getContent(), true),
+            EventInput::class
+        );
         $errors = $validator->validate($eventInput);
 
         if (\count($errors) > 0) {

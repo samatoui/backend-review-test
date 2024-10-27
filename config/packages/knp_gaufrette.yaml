@@ -1,0 +1,12 @@
+knp_gaufrette:
+    stream_wrapper: ~
+
+    adapters:
+        local_spool_fs:
+            local:
+                directory: "%kernel.project_dir%/var/spool"
+                create: true
+
+    filesystems:
+        custom_uploads_spool_fs:
+            adapter: local_spool_fs
