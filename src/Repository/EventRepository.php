@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Dto\SearchInput;
 use App\Entity\Event;
+use App\Entity\EventType;
 use Doctrine\DBAL\Exception;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -88,7 +89,11 @@ class EventRepository extends ServiceEntityRepository implements RepositoryInter
         $data = array_fill(
             0,
             24,
-            ['commit' => 0, 'pullRequest' => 0, 'comment' => 0]
+            [
+                EventType::PUSH_EVENT           => 0,
+                EventType::PULL_REQUEST_EVENT   => 0,
+                EventType::COMMIT_COMMENT_EVENT => 0
+            ]
         );
 
         foreach ($stats as $stat) {
@@ -134,6 +139,8 @@ class EventRepository extends ServiceEntityRepository implements RepositoryInter
     {
         $connection = $this->getEntityManager()->getConnection();
         $connection->beginTransaction();
+
+        gc_enable();
 
         $eventSql = <<<SQL
             INSERT INTO event (id, type, actor_id, repo_id, count, payload, comment, created_at)
@@ -202,6 +209,7 @@ class EventRepository extends ServiceEntityRepository implements RepositoryInter
             throw $e;
         } finally {
             $connection->close();
+            gc_collect_cycles();
         }
     }
 }

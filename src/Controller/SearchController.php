@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Dto\SearchInput;
+use App\Entity\EventType;
 use App\Manager\EventManager;
 use App\Serializer\JsonSerializer;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -36,9 +37,9 @@ class SearchController
         $data = [
             'meta' => [
                 'totalEvents'       => $this->eventManager->countAll($searchInput),
-                'totalPullRequests' => $countByType['pullRequest'] ?? 0,
-                'totalCommits'      => $countByType['commit'] ?? 0,
-                'totalComments'     => $countByType['comment'] ?? 0,
+                'totalPullRequests' => $countByType[EventType::PULL_REQUEST_EVENT] ?? 0,
+                'totalCommits'      => $countByType[EventType::PUSH_EVENT] ?? 0,
+                'totalComments'     => $countByType[EventType::COMMIT_COMMENT_EVENT] ?? 0,
             ],
             'data' => [
                 'events' => $this->eventManager->getLatest($searchInput),
