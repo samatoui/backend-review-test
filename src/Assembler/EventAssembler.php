@@ -12,28 +12,15 @@ use App\Entity\Event;
 class EventAssembler extends AbstractAssembler
 {
     /**
-     * @var RepoAssembler
-     */
-    private RepoAssembler $repoAssembler;
-
-    /**
-     * @var ActorAssembler
-     */
-    private ActorAssembler $actorAssembler;
-
-    /**
      * EventAssembler constructor.
      *
      * @param RepoAssembler  $repoAssembler
      * @param ActorAssembler $actorAssembler
      */
     public function __construct(
-        RepoAssembler $repoAssembler,
-        ActorAssembler $actorAssembler,
-    ) {
-        $this->repoAssembler = $repoAssembler;
-        $this->actorAssembler = $actorAssembler;
-    }
+        private RepoAssembler  $repoAssembler,
+        private ActorAssembler $actorAssembler,
+    ) {}
 
     /**
      * @param Event $event
@@ -55,12 +42,12 @@ class EventAssembler extends AbstractAssembler
 
         $eventDto            = new EventDto();
         $eventDto->id        = $event->id();
-        $eventDto->type      = $event->getType();
-        $eventDto->payload   = $event->getPayload();
+        $eventDto->type      = $event->type();
+        $eventDto->payload   = $event->payload();
         $eventDto->comment   = $event->getComment();
-        $eventDto->createdAt = $event->getCreatedAt();
-        $eventDto->actor     = $this->actorAssembler->transform($event->getActor());
-        $eventDto->repo      = $this->repoAssembler->transform($event->getRepo());
+        $eventDto->createdAt = $event->createdAt();
+        $eventDto->actor     = $this->actorAssembler->transform($event->actor());
+        $eventDto->repo      = $this->repoAssembler->transform($event->repo());
 
         return $eventDto;
     }
@@ -84,7 +71,7 @@ class EventAssembler extends AbstractAssembler
             ));
         }
 
-        $event = $event ?? new Event(
+        return $event ?? new Event(
             $eventDto->id,
             $eventDto->type,
             $this->actorAssembler->reverseTransform($eventDto->actor),
@@ -93,7 +80,5 @@ class EventAssembler extends AbstractAssembler
             $eventDto->createdAt,
             $eventDto->comment,
         );
-
-        return $event;
     }
 }

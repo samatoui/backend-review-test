@@ -2,47 +2,24 @@
 
 namespace App\EventListener;
 
-use App\Assembler\EventAssembler;
 use App\Dto\EventDto;
 use App\Events;
 use App\Event\EventsBatchEvent;
+use App\Manager\EventManager;
 use App\Serializer\JsonSerializer;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 
 class EventsBatchEventListener implements EventSubscriberInterface
 {
     /**
-     * @var EntityManagerInterface
-     *
-     */
-    private EntityManagerInterface $em;
-
-    /**
-     * @var JsonSerializer
-     */
-    private JsonSerializer $serializer;
-
-    /**
-     * @var EventAssembler
-     */
-    private EventAssembler $eventAssembler;
-
-    /**
-     * @param EntityManagerInterface $em
-     * @param JsonSerializer         $serializer
-     * @param EventAssembler         $eventAssembler
+     * @param EventManager   $em
+     * @param JsonSerializer $serializer
      */
     public function __construct(
-        EntityManagerInterface $em,
-        JsonSerializer $serializer,
-        EventAssembler $eventAssembler,
-    ) {
-        $this->em             = $em;
-        $this->serializer     = $serializer;
-        $this->eventAssembler = $eventAssembler;
-    }
+        private EventManager   $em,
+        private JsonSerializer $serializer,
+    ) {}
 
     /**
      * Declares the events listened to by this listener
@@ -58,16 +35,17 @@ class EventsBatchEventListener implements EventSubscriberInterface
      * Trait a bulk of events
      *
      * @param EventsBatchEvent $event
+     * @throws \Exception
      * @throws ExceptionInterface
      */
     public function onEventsBatch(EventsBatchEvent $event): void
     {
+        $events = [];
+
         foreach ($event->getEvents() as $object) {
-            $eventDto= $this->serializer->denormalize($object, EventDto::class);
-            $eventObj = $this->eventAssembler->reverseTransform($eventDto);
-            $this->em->persist($eventObj);
+            $events[] = $this->serializer->denormalize($object, EventDto::class);
         }
 
-        $this->em->flush();
+        $this->em->insertOrUpdateBatchOfEvents($events);
     }
 }

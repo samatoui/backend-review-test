@@ -9,43 +9,17 @@ use App\Validator\DateHourValidator;
 class GHArchiveService
 {
     /**
-     * @var HttpClientInterface
-     */
-    private HttpClientInterface $client;
-
-    /**
-     * @var DateHourValidator
-     */
-    private DateHourValidator $dateHourValidator;
-
-    /**
-     * @var SpoolStorage
-     */
-    private SpoolStorage $spoolStorage;
-
-    /**
-     * @var string
-     */
-    private string $ghArchiveUrl;
-
-    /**
      * @param HttpClientInterface $client
      * @param DateHourValidator   $dateHourValidator
      * @param SpoolStorage        $spoolStorage
      * @param string              $ghArchiveUrl
      */
     public function __construct(
-        HttpClientInterface $client,
-        DateHourValidator   $dateHourValidator,
-        SpoolStorage        $spoolStorage,
-        string              $ghArchiveUrl
-    )
-    {
-        $this->client            = $client;
-        $this->dateHourValidator = $dateHourValidator;
-        $this->spoolStorage      = $spoolStorage;
-        $this->ghArchiveUrl      = $ghArchiveUrl;
-    }
+        private HttpClientInterface $client,
+        private DateHourValidator   $dateHourValidator,
+        private SpoolStorage        $spoolStorage,
+        private string              $ghArchiveUrl
+    ) {}
 
     /**
      * @param string $date

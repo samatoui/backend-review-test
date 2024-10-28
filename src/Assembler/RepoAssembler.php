@@ -31,8 +31,8 @@ class RepoAssembler extends AbstractAssembler
 
         $repoDto       = new RepoDto();
         $repoDto->id   = $repo->id();
-        $repoDto->name = $repo->getName();
-        $repoDto->url  = $repo->getUrl();
+        $repoDto->name = $repo->name();
+        $repoDto->url  = $repo->url();
 
         return $repoDto;
     }
@@ -56,12 +56,10 @@ class RepoAssembler extends AbstractAssembler
             ));
         }
 
-        $repo = $repo ?? new Repo(
+        return $repo ?? new Repo(
             $repoDto->id,
             $repoDto->name,
             $repoDto->url,
         );
-
-        return $repo;
     }
 }

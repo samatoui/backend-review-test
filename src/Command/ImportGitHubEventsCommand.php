@@ -31,35 +31,16 @@ class ImportGitHubEventsCommand extends Command
     protected static $defaultName = 'app:import-github-events';
 
     /**
-     * @var GHArchiveService
-     */
-    private GHArchiveService $ghArchiveService;
-
-    /**
-     * @var EventDispatcherInterface
-     */
-    public EventDispatcherInterface $dispatcher;
-
-    /**
-     * @var int
-     */
-    private int $eventBatchSize;
-
-    /**
      * @param GHArchiveService         $ghArchiveService
      * @param EventDispatcherInterface $dispatcher
      * @param int                      $eventBatchSize
      */
     public function __construct(
-        GHArchiveService $ghArchiveService,
-        EventDispatcherInterface $dispatcher,
-        int $eventBatchSize,
+        private GHArchiveService         $ghArchiveService,
+        private EventDispatcherInterface $dispatcher,
+        private int                      $eventBatchSize,
     ) {
         parent::__construct();
-
-        $this->ghArchiveService = $ghArchiveService;
-        $this->dispatcher       = $dispatcher;
-        $this->eventBatchSize   = $eventBatchSize;
     }
 
     /**

@@ -31,9 +31,9 @@ class ActorAssembler extends AbstractAssembler
 
         $actorDto            = new ActorDto();
         $actorDto->id        = $actor->id();
-        $actorDto->login     = $actor->getLogin();
-        $actorDto->url       = $actor->getUrl();
-        $actorDto->avatarUrl = $actor->getAvatarUrl();
+        $actorDto->login     = $actor->login();
+        $actorDto->url       = $actor->url();
+        $actorDto->avatarUrl = $actor->avatarUrl();
 
         return $actorDto;
     }
@@ -57,13 +57,11 @@ class ActorAssembler extends AbstractAssembler
             ));
         }
 
-        $actor = $actor ?? new Actor(
+        return $actor ?? new Actor(
             $actorDto->id,
             $actorDto->login,
             $actorDto->url,
             $actorDto->avatarUrl,
         );
-
-        return $actor;
     }
 }

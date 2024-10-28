@@ -48,7 +48,7 @@ class Event
     /**
      * @ORM\Column(type="datetime_immutable", nullable=false)
      */
-    private \DateTimeImmutable $createAt;
+    private \DateTimeImmutable $createdAt;
 
     /**
      * @ORM\Column(type="text", nullable=true)
@@ -66,14 +66,14 @@ class Event
      */
     public function __construct(int $id, string $type, Actor $actor, Repo $repo, array $payload, \DateTimeImmutable $createAt, ?string $comment)
     {
-        $this->id       = $id;
+        $this->id        = $id;
         EventType::assertValidChoice($type);
-        $this->type     = $type;
-        $this->actor    = $actor;
-        $this->repo     = $repo;
-        $this->payload  = $payload;
-        $this->createAt = $createAt;
-        $this->comment  = $comment;
+        $this->type      = $type;
+        $this->actor     = $actor;
+        $this->repo      = $repo;
+        $this->payload   = $payload;
+        $this->createdAt = $createAt;
+        $this->comment   = $comment;
 
         if ($type === EventType::COMMIT) {
             $this->count = $payload['size'] ?? 1;
@@ -178,18 +178,18 @@ class Event
     /**
      * @return \DateTimeImmutable
      */
-    public function createAt(): \DateTimeImmutable
+    public function createdAt(): \DateTimeImmutable
     {
-        return $this->createAt;
+        return $this->createdAt;
     }
 
     /**
-     * @param \DateTimeImmutable $createAt
+     * @param \DateTimeImmutable $createdAt
      * @return self
      */
-    public function setCreateAt(\DateTimeImmutable $createAt): self
+    public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
-        $this->createAt = $createAt;
+        $this->createdAt = $createdAt;
 
         return $this;
     }

@@ -2,10 +2,8 @@
 
 namespace App\Controller;
 
-use App\Dto\EventInput;
-use App\Repository\ReadEventRepository;
-use App\Repository\WriteEventRepository;
-use App\Serializer\JsonSerializer;
+use App\Assembler\EventAssembler;
+use App\Manager\EventManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,34 +13,13 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class EventController
 {
     /**
-     * @var WriteEventRepository
-     */
-    private WriteEventRepository $writeEventRepository;
-
-    /**
-     * @var ReadEventRepository
-     */
-    private ReadEventRepository $readEventRepository;
-
-    /**
-     * @var JsonSerializer
-     */
-    private JsonSerializer $serializer;
-
-    /**
-     * @param WriteEventRepository $writeEventRepository
-     * @param ReadEventRepository  $readEventRepository
-     * @param JsonSerializer       $serializer
+     * @param EventManager   $eventManager
+     * @param EventAssembler $eventAssembler
      */
     public function __construct(
-        WriteEventRepository $writeEventRepository,
-        ReadEventRepository $readEventRepository,
-        JsonSerializer $serializer
-    ) {
-        $this->writeEventRepository = $writeEventRepository;
-        $this->readEventRepository = $readEventRepository;
-        $this->serializer          = $serializer;
-    }
+        private EventManager   $eventManager,
+        private EventAssembler $eventAssembler
+    ) {}
 
     /**
      * @param Request            $request
@@ -56,11 +33,15 @@ class EventController
     #[Route('/api/event/{id}/update', name: "api_commit_update", methods: ['PUT'])]
     public function update(Request $request, int $id, ValidatorInterface $validator): Response
     {
-        $eventInput = $this->serializer->denormalize(
-            \json_decode($request->getContent(), true),
-            EventInput::class
-        );
-        $errors = $validator->validate($eventInput);
+        if (null === $event = $this->eventManager->findOneById($id)) {
+            return new JsonResponse(
+                ['message' => sprintf('Event identified by %d not found !', $id)],
+                Response::HTTP_NOT_FOUND
+            );
+        }
+
+        $eventDto = $this->eventAssembler->transformAndPatch($event, $request->request->all());
+        $errors   = $validator->validate($eventDto);
 
         if (\count($errors) > 0) {
             return new JsonResponse(
@@ -69,15 +50,9 @@ class EventController
             );
         }
 
-        if($this->readEventRepository->exist($id) === false) {
-            return new JsonResponse(
-                ['message' => sprintf('Event identified by %d not found !', $id)],
-                Response::HTTP_NOT_FOUND
-            );
-        }
-
         try {
-            $this->writeEventRepository->update($eventInput, $id);
+            $event = $this->eventAssembler->reverseTransform($eventDto, $event);
+            $this->eventManager->save($event);
         } catch (\Exception $exception) {
             return new Response(null, Response::HTTP_SERVICE_UNAVAILABLE);
         }
