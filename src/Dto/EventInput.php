@@ -11,7 +11,11 @@ class EventInput
      */
     public ?string $comment;
 
-    public function __construct(?string $comment) {
+    /**
+     * @param string|null $comment
+     */
+    public function __construct(?string $comment)
+    {
         $this->comment = $comment;
     }
 }

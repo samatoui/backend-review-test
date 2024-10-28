@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use App\Entity\Traits\EntityIdTrait;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -12,12 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Repo
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="bigint")
-     * @ORM\GeneratedValue(strategy="NONE")
-     */
-    private int $id;
+    use EntityIdTrait;
 
     /**
      * @ORM\Column(type="string")
@@ -29,30 +25,67 @@ class Repo
      */
     public string $url;
 
+    /**
+     * @param int    $id
+     * @param string $name
+     * @param string $url
+     */
     public function __construct(int $id, string $name, string $url)
     {
-        $this->id = $id;
+        $this->id   = $id;
         $this->name = $name;
-        $this->url = $url;
+        $this->url  = $url;
     }
 
-    public function id(): int
-    {
-        return $this->id;
-    }
-
+    /**
+     * @return string
+     */
     public function name(): string
     {
         return $this->name;
     }
 
+    /**
+     * @param string $name
+     * @return self
+     */
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
     public function url(): string
     {
         return $this->url;
     }
 
+    /**
+     * @param string $url
+     * @return self
+     */
+    public function setUrl(string $url): self
+    {
+        $this->url = $url;
+
+        return $this;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return self
+     */
     public static function fromArray(array $data): self
     {
+        if (!isset($data['id'], $data['name'], $data['url'])) {
+            throw new \InvalidArgumentException("Invalid data for Repo entity");
+        }
+
         return new self(
             (int) $data['id'],
             $data['name'],
