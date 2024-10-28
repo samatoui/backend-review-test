@@ -11,11 +11,11 @@ use App\Serializer\JsonSerializer;
 abstract class AbstractAssembler
 {
     /**
-     * @var JsonSerializer
-     *
-     * @required
+     * @param JsonSerializer $serializer
      */
-    private JsonSerializer $serializer;
+    public function __construct(protected JsonSerializer $serializer)
+    {}
+
 
     /**
      * @return JsonSerializer

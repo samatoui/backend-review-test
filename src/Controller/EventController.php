@@ -40,7 +40,7 @@ class EventController
             );
         }
 
-        $eventDto = $this->eventAssembler->transformAndPatch($event, $request->request->all());
+        $eventDto = $this->eventAssembler->transformAndPatch($event, json_decode($request->getContent(), true));
         $errors   = $validator->validate($eventDto);
 
         if (\count($errors) > 0) {

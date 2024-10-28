@@ -5,6 +5,7 @@ namespace App\Assembler;
 use App\Dto\DtoInterface;
 use App\Dto\EventDto;
 use App\Entity\Event;
+use App\Serializer\JsonSerializer;
 
 /**
  * Clas  EventAssembler.
@@ -18,9 +19,12 @@ class EventAssembler extends AbstractAssembler
      * @param ActorAssembler $actorAssembler
      */
     public function __construct(
-        private RepoAssembler  $repoAssembler,
-        private ActorAssembler $actorAssembler,
-    ) {}
+        protected JsonSerializer $serializer,
+        private RepoAssembler    $repoAssembler,
+        private ActorAssembler   $actorAssembler,
+    ) {
+        parent::__construct($serializer);
+    }
 
     /**
      * @param Event $event
@@ -71,14 +75,19 @@ class EventAssembler extends AbstractAssembler
             ));
         }
 
-        return $event ?? new Event(
-            $eventDto->id,
-            $eventDto->type,
-            $this->actorAssembler->reverseTransform($eventDto->actor),
-            $this->repoAssembler->reverseTransform($eventDto->repo),
-            $eventDto->payload,
-            $eventDto->createdAt,
-            $eventDto->comment,
-        );
+        if (is_null($event)) {
+            return new Event(
+                $eventDto->id,
+                $eventDto->type,
+                $this->actorAssembler->reverseTransform($eventDto->actor),
+                $this->repoAssembler->reverseTransform($eventDto->repo),
+                $eventDto->payload,
+                $eventDto->createdAt,
+                $eventDto->comment,
+            );
+        }
+
+        $event->setComment($eventDto->comment);
+        return $event;
     }
 }
